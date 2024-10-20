@@ -30,3 +30,5 @@ solver.parameters.linearization_level = 0
 # Enumerate all solutions.
 solver.parameters.enumerate_all_solutions = True
 solver.solve(model.model, solution_exporter)
+
+connection.close()
