@@ -4,15 +4,13 @@ python 3 installed.  I think that's all?
 ## Windows
 1. open powershell
 2. cd to this directory
-3. .\env\bin\Activate.ps1
-4. pip install -r requirements.txt
-5. python3 migrate.py
+3. pip install -r requirements.txt
+4. python3 migrate.py
 ## Linux
 1. open bash
 2. cd to this directory
-3. source env/bin/activate
-4. pip install -r requirements.txt
-5. python3 migrate.py
+3. pip install -r requirements.txt
+4. python3 migrate.py
 
 # Running the solver
 1. set up your database.  At the moment there is no application for this, connect to the var/data.db file with your preferred sqlite client (I used heidisql)
