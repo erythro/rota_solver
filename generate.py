@@ -2,8 +2,9 @@ import sqlite3
 
 from Services.DataService import DataService
 from Model.ModelFactory import ModelFactory
-from Model.SolutionExporter import SolutionExporter
 from ortools.sat.python import cp_model
+from Model.Processor.ExactlyOnePersonInEachSlot import ExactlyOnePersonInEachSlot
+from Model.Processor.PersonCanOnlyServeOncePerEvent import PersonCanOnlyServeOncePerEvent
 
 connection = sqlite3.connect("var/data.db")
 dataService = DataService(connection)
@@ -12,12 +13,14 @@ rota = dataService.getRota()
 roles = dataService.getRoles()
 #constraints = dataService.getConstraints() #todo
 
-modelFactory = ModelFactory()
+modelFactory = ModelFactory([
+    ExactlyOnePersonInEachSlot(),
+    PersonCanOnlyServeOncePerEvent()
+])
 
 model = modelFactory.create(
     rota,
-    roles,
-    #constraints #todo
+    roles
 )
 
 solution_exporter = SolutionExporter(
@@ -28,7 +31,28 @@ solution_exporter = SolutionExporter(
 solver = cp_model.CpSolver()
 solver.parameters.linearization_level = 0
 # Enumerate all solutions.
-solver.parameters.enumerate_all_solutions = True
-solver.solve(model.model, solution_exporter)
+result = solver.solve(model.model, cp_model.ObjectiveSolutionPrinter())
 
+def exportSolution(connection, model, solver):
+    cursor = connection.cursor()
+    cursor.execute('DELETE FROM solution')
+    toInsert = []
+    for (person_id, slot_id, event_id), possibility in model.possibilities.items():
+        if solver.boolean_value(possibility):
+            toInsert.append((event_id,slot_id,person_id))
+    cursor.executemany("INSERT INTO solution VALUES(?, ?, ?)", toInsert)
+    connection.commit()
+
+if result == cp_model.MODEL_INVALID:
+    print('Model Invalid')
+elif result == cp_model.INFEASIBLE:
+    print('No Solution Found')
+elif result == cp_model.FEASIBLE:
+    print('Feasible Solution Found')
+    exportSolution(connection, model, solver)
+elif result == cp_model.OPTIMAL:
+    print('Optimal Solution Found')
+    exportSolution(connection, model, solver)
+else:
+    print('Unknown result code')
 connection.close()
