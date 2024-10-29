@@ -8,7 +8,7 @@ class Rota:
 class Event:
     id: int
     name: str
-    slots = dict()
+    slots: dict
 
 @dataclass
 class Slot:
@@ -37,7 +37,7 @@ class DataService:
         #Load all events (e.g. services)
         result = self.cursor.execute('SELECT * FROM event')
         for [id, name] in result.fetchall():
-            rota.events[id] = Event(id, name)
+            rota.events[id] = Event(id, name, dict())
 
         #Load all slots for timeSlots
         result = self.cursor.execute('SELECT * FROM slot LEFT JOIN role ON slot.role_id = role.id')
