@@ -23,10 +23,6 @@ model = modelFactory.create(
     roles
 )
 
-solution_exporter = SolutionExporter(
-    model, connection
-)
-
 # Creates the solver and solve.
 solver = cp_model.CpSolver()
 solver.parameters.linearization_level = 0
