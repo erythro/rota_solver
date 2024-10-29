@@ -21,7 +21,7 @@ class Slot:
 class Role:
     id: int
     role_name: str
-    person_ids = []
+    person_ids: list
 
 class DataService:
     connection = None
@@ -50,7 +50,7 @@ class DataService:
         result = self.cursor.execute('SELECT * FROM person_role LEFT JOIN role ON person_role.role_id = role.id')
         for [person_id, role_id, _, role_name] in result.fetchall():
             if role_id not in roles:
-                roles[role_id] = Role(role_id, role_name)
+                roles[role_id] = Role(role_id, role_name, [])
             roles[role_id].person_ids.append(person_id)
         return roles
         
