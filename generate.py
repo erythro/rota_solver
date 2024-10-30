@@ -12,12 +12,11 @@ dataService = DataService(connection)
 
 rota = dataService.getRota()
 roles = dataService.getRoles()
-#constraints = dataService.getConstraints() #todo
 
 modelFactory = ModelFactory([
     ExactlyOnePersonInEachSlot(),
     PersonCanOnlyServeOncePerEvent(),
-    ShareEqually(dataService),
+    ShareEqually(dataService, 1),
 ])
 
 model = modelFactory.create(

@@ -11,6 +11,7 @@ class Model:
     possibilitiesByEventAndSlot = {}
     possibilitiesByEventAndPerson = {}
     possibilitiesByRoleAndPerson = {}
+    toMinimise = 0
 
 class ModelFactory:
     processors: list
@@ -22,6 +23,7 @@ class ModelFactory:
         self.addPossibilities(model)
         for processor in self.processors:
             processor.process(model)
+        model.model.minimize(model.toMinimise)
         return model
 
     def addPossibilities(self, model: Model):

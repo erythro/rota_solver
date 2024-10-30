@@ -8,12 +8,14 @@ class ShareEqually(AbstractProcessor):
     slotsPerRoleCounts: dict
     expectedPeriods: dict
     averageRoleCountsPerEvent: dict
-    def __init__(self, dataService: DataService):
+    weight: int
+    def __init__(self, dataService: DataService, weight: int):
         self.dataService = dataService
         self.rolesPerPersonCounts = self.dataService.rolesPerPersonCounts()
         self.slotsPerRoleCounts = self.dataService.slotsPerRoleCounts()
         self.expectedPeriods = self.dataService.expectedPeriods()
         self.averageRoleCountsPerEvent = self.dataService.averageRoleCountsPerEvent()
+        self.weight = weight
     def process(self, model: Model):
         toMinimise = 0
         multiplier = 100
@@ -66,7 +68,9 @@ class ShareEqually(AbstractProcessor):
                 )
 
                 toMinimise += absoluteDifference # this is an expression not a number
-        model.model.minimize(toMinimise)
+
+        model.toMinimise = toMinimise * self.weight
+
 
         
         
