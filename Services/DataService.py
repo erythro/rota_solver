@@ -54,3 +54,16 @@ class DataService:
             roles[role_id].person_ids.append(person_id)
         return roles
         
+    def rolesPerPersonCounts(self) -> dict:
+        roleCounts = dict()
+        result = self.cursor.execute('SELECT person.id, COUNT(person_role.role_id) FROM person LEFT JOIN person_role ON person_role.person_id = person.id GROUP BY person.id')
+        for [person_id, role_count] in result.fetchall():
+            roleCounts[person_id] = role_count
+        return roleCounts
+
+    def slotsPerRoleCounts(self) -> dict:
+        slotCounts = dict()
+        result = self.cursor.execute('SELECT role.id, COUNT(slot.id) FROM role LEFT JOIN slot ON slot.role_id = role.id GROUP BY role.id')
+        for [role_id, slot_count] in result.fetchall():
+            slotCounts[role_id] = slot_count
+        return slotCounts

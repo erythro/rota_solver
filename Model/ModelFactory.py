@@ -9,7 +9,8 @@ class Model:
     roles: dict
     possibilities = {}
     possibilitiesByEventAndSlot = {}
-    possibliitiesByEventAndPerson = {}
+    possibilitiesByEventAndPerson = {}
+    possibilitiesByRoleAndPerson = {}
 
 class ModelFactory:
     processors: list
@@ -37,12 +38,15 @@ class ModelFactory:
                     if (slot.event_id, slot.id) not in model.possibilitiesByEventAndSlot:
                         model.possibilitiesByEventAndSlot[(slot.event_id, slot.id)] = []
 
+                    if (slot.event_id, person_id) not in model.possibilitiesByEventAndPerson:
+                        model.possibilitiesByEventAndPerson[(slot.event_id, person_id)] = []
 
-                    if (slot.event_id, person_id) not in model.possibliitiesByEventAndPerson:
-                        model.possibliitiesByEventAndPerson[(slot.event_id, person_id)] = []
+                    if (slot.role_id, person_id) not in model.possibilitiesByRoleAndPerson:
+                        model.possibilitiesByRoleAndPerson[(slot.role_id, person_id)] = []
 
                     model.possibilitiesByEventAndSlot[(slot.event_id, slot.id)].append(possibility)
-                    model.possibliitiesByEventAndPerson[(slot.event_id, person_id)].append(possibility)
+                    model.possibilitiesByEventAndPerson[(slot.event_id, person_id)].append(possibility)
+                    model.possibilitiesByRoleAndPerson[(slot.role_id, person_id)].append(possibility)
         
 
         

@@ -5,6 +5,7 @@ from Model.ModelFactory import ModelFactory
 from ortools.sat.python import cp_model
 from Model.Processor.ExactlyOnePersonInEachSlot import ExactlyOnePersonInEachSlot
 from Model.Processor.PersonCanOnlyServeOncePerEvent import PersonCanOnlyServeOncePerEvent
+from Model.Processor.ShareEqually import ShareEqually
 
 connection = sqlite3.connect("var/data.db")
 dataService = DataService(connection)
@@ -15,7 +16,8 @@ roles = dataService.getRoles()
 
 modelFactory = ModelFactory([
     ExactlyOnePersonInEachSlot(),
-    PersonCanOnlyServeOncePerEvent()
+    PersonCanOnlyServeOncePerEvent(),
+    ShareEqually(dataService),
 ])
 
 model = modelFactory.create(
@@ -26,6 +28,7 @@ model = modelFactory.create(
 # Creates the solver and solve.
 solver = cp_model.CpSolver()
 solver.parameters.linearization_level = 0
+solver.parameters.enumerate_all_solutions = True
 # Enumerate all solutions.
 result = solver.solve(model.model, cp_model.ObjectiveSolutionPrinter())
 
