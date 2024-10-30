@@ -48,7 +48,7 @@ class DataService:
     def getRoles(self) -> dict:
         roles = dict()
         result = self.cursor.execute('SELECT * FROM person_role LEFT JOIN role ON person_role.role_id = role.id')
-        for [person_id, role_id, _, role_name] in result.fetchall():
+        for [person_id, role_id, _, _, role_name] in result.fetchall():
             if role_id not in roles:
                 roles[role_id] = Role(role_id, role_name, [])
             roles[role_id].person_ids.append(person_id)
@@ -67,3 +67,18 @@ class DataService:
         for [role_id, slot_count] in result.fetchall():
             slotCounts[role_id] = slot_count
         return slotCounts
+
+    def expectedPeriods(self) -> dict:
+        expectedPeriods = dict()
+        result = self.cursor.execute('SELECT * FROM person_role')
+        for [person_id, role_id, expected_period] in result.fetchall():
+            if expected_period != None:
+                expectedPeriods[(person_id, role_id)] = expected_period
+        return expectedPeriods
+    
+    def averageRoleCountsPerEvent(self) -> dict:
+        averageRoleCountsPerEvent = dict()
+        result = self.cursor.execute('SELECT role_id, 1.0 * COUNT(id)/ COUNT(DISTINCT event_id) FROM slot GROUP BY role_id')
+        for [role_id, averageRoleCountPerEvent] in result.fetchall():
+            averageRoleCountsPerEvent[role_id] = averageRoleCountPerEvent
+        return averageRoleCountsPerEvent
