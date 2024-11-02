@@ -4,7 +4,7 @@ from Services.DataService import DataService
 from ortools.sat.python import cp_model
 from Model.ModelFactory import ModelFactory
 from Model.Processor.AddPossibilities import AddPossibilities
-from Model.Processor.CreateUserIsServingInEventBools import CreateUserIsServingInEventBools
+from Model.Processor.CreateUserIsServingInEventVars import CreateUserIsServingInEventVars
 from Model.Processor.ExactlyOnePersonInEachSlot import ExactlyOnePersonInEachSlot
 from Model.Processor.PersonCanOnlyServeOncePerEvent import PersonCanOnlyServeOncePerEvent
 from Model.Processor.ShareEqually import ShareEqually
@@ -21,7 +21,7 @@ roles = dataService.getRoles()
 
 modelFactory = ModelFactory([
     AddPossibilities(),
-    CreateUserIsServingInEventBools(),
+    CreateUserIsServingInEventVars(),
     ExactlyOnePersonInEachSlot(),
     PersonCanOnlyServeOncePerEvent(),
     ShareEqually(dataService, 1),

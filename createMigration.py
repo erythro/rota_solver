@@ -14,7 +14,9 @@ name = str(int(time.time())) + '_' + args.name + '.py'
 
 f = open(os.path.join('Migrations',name), "w")
 f.write("def run(cursor):\n")
-f.write("   #put your migration here")
+f.write('   cursor.execute("""\n')
+f.write("       #put your migration here\n")
+f.write('   """)\n')
 f.close()
 
 print('created Migration')
