@@ -53,7 +53,7 @@ class ShareEqually(AbstractProcessor):
                 # negative value would be better and better.  E.g. without abs if the target is 1 in 3, 1 in 7 
                 # would be better than 1 in 4.  I imagine it would end up with one person being rota-d as much as
                 # possible!
-                possibilitiesForPersonInRole = model.possibilitiesByRoleAndPerson[(role_id,person_id)]
+                possibilitiesForPersonInRole = model.data['possibilities']['byRoleAndPerson'][(role_id,person_id)]
                 sumPossibilitiesForPersonInRole = sum(possibilitiesForPersonInRole) #this is an expression of what the sum would be when solved, not a number
                 # setting up a new variable that tracks the absolute value of the difference
                 absoluteDifference = model.model.NewIntVar(

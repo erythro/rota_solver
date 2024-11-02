@@ -3,6 +3,7 @@ import sqlite3
 from Services.DataService import DataService
 from ortools.sat.python import cp_model
 from Model.ModelFactory import ModelFactory
+from Model.Processor.AddPossibilities import AddPossibilities
 from Model.Processor.ExactlyOnePersonInEachSlot import ExactlyOnePersonInEachSlot
 from Model.Processor.PersonCanOnlyServeOncePerEvent import PersonCanOnlyServeOncePerEvent
 from Model.Processor.ShareEqually import ShareEqually
@@ -18,6 +19,7 @@ rota = dataService.getRota()
 roles = dataService.getRoles()
 
 modelFactory = ModelFactory([
+    AddPossibilities(),
     ExactlyOnePersonInEachSlot(),
     PersonCanOnlyServeOncePerEvent(),
     ShareEqually(dataService, 1),
@@ -37,7 +39,7 @@ def exportSolution(connection, model, solver):
     cursor = connection.cursor()
     cursor.execute('DELETE FROM solution')
     toInsert = []
-    for (person_id, slot_id, event_id), possibility in model.possibilities.items():
+    for (person_id, slot_id, event_id), possibility in model.data['possibilities']['all'].items():
         if solver.boolean_value(possibility):
             toInsert.append((event_id,slot_id,person_id))
     cursor.executemany("INSERT INTO solution VALUES(?, ?, ?)", toInsert)
