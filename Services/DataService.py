@@ -9,7 +9,7 @@ class Rota:
 class Event:
     id: int
     name: str
-    date: datetime
+    date: datetime.datetime
     event_type: str
     slots: dict
 
@@ -43,7 +43,7 @@ class DataService:
 
         #Load all events (e.g. services)
         for [id, name, date, event_type] in self.query('SELECT * FROM event'):
-            rota.events[id] = Event(id, name, date, event_type, dict())
+            rota.events[id] = Event(id, name, datetime.datetime.strptime(date,'%Y-%m-%d %H:%M:%S'), event_type, dict())
 
         #Load all slots for timeSlots
         for [id, event_id, role_id, _, role_name] in self.query('SELECT * FROM slot LEFT JOIN role ON slot.role_id = role.id'):
