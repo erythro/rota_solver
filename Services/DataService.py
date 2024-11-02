@@ -68,13 +68,13 @@ class DataService:
             slotCounts[role_id] = slot_count
         return slotCounts
 
-    def expectedPeriods(self) -> dict:
-        expectedPeriods = dict()
+    def onOneInXEvents(self) -> dict:
+        onOneInXEvents = dict()
         result = self.cursor.execute('SELECT * FROM person_role')
-        for [person_id, role_id, expected_period] in result.fetchall():
-            if expected_period != None:
-                expectedPeriods[(person_id, role_id)] = expected_period
-        return expectedPeriods
+        for [person_id, role_id, on_one_in_x_events] in result.fetchall():
+            if on_one_in_x_events != None:
+                onOneInXEvents[(person_id, role_id)] = on_one_in_x_events
+        return onOneInXEvents
     
     def averageRoleCountsPerEvent(self) -> dict:
         averageRoleCountsPerEvent = dict()

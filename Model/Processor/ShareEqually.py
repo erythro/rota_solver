@@ -6,14 +6,14 @@ class ShareEqually(AbstractProcessor):
     dataService: DataService
     rolesPerPersonCounts: dict
     slotsPerRoleCounts: dict
-    expectedPeriods: dict
+    onOneInXEvents: dict
     averageRoleCountsPerEvent: dict
     weight: int
     def __init__(self, dataService: DataService, weight: int):
         self.dataService = dataService
         self.rolesPerPersonCounts = self.dataService.rolesPerPersonCounts()
         self.slotsPerRoleCounts = self.dataService.slotsPerRoleCounts()
-        self.expectedPeriods = self.dataService.expectedPeriods()
+        self.onOneInXEvents = self.dataService.onOneInXEvents()
         self.averageRoleCountsPerEvent = self.dataService.averageRoleCountsPerEvent()
         self.weight = weight
     def process(self, model: Model):
@@ -24,9 +24,9 @@ class ShareEqually(AbstractProcessor):
             expectedShareOfRole = dict()
             ratioOfRemainingShare = dict()
             for person_id in role.person_ids:
-                if (person_id, role_id) in self.expectedPeriods:
+                if (person_id, role_id) in self.onOneInXEvents:
                     # someone should be on for example 1 in 3 events, so we can calculate now what their expected share will be of slots with that role
-                    expectedShareOfRole[person_id] = 1/self.expectedPeriods[(person_id, role_id)]/self.averageRoleCountsPerEvent[role_id]
+                    expectedShareOfRole[person_id] = 1/self.onOneInXEvents[(person_id, role_id)]/self.averageRoleCountsPerEvent[role_id]
                 else:
                     # if we don't know how often they should be on, we share it out equally based on how many other roles they have, so we save that for later
                     ratioOfRemainingShare[person_id] = 1/self.rolesPerPersonCounts[person_id]
