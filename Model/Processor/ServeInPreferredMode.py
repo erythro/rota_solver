@@ -47,15 +47,18 @@ class ServeInPreferredMode(AbstractProcessor):
             model.model.Add(count == 1)
 
     def processNotEventType(self, model: Model):
-        for  [person_id, event_id], boolean in model.data['personServedEvent'].items():
-            personModeNotEvenings = person_id not in self.notEvenings
-            personModeNotMornings = person_id not in self.notMornings
+        for  [person_id, event_id], personIsServingThisEvent in model.data['personServedEvent'].items():
+            personModeNotEvenings = person_id in self.notEvenings
+            personModeNotMornings = person_id in self.notMornings
+            
             if not personModeNotMornings and not personModeNotEvenings 
-                continue
-            if model.rota.events[event_id].type != 'evening'
+                continue #nothing to filter out
+
+            if model.rota.events[event_id].type == 'evening'
                 if personModeNotEvenings
-                    model.model.Add(boolean == 0)
-            else
-                if personModeNotMornings 
-                    model.model.Add(boolean == 0)
+                    model.model.Add(personIsServingThisEvent == 0)
+                continue
+            
+            if personModeNotMornings 
+                model.model.Add(personIsServingThisEvent == 0)
             
