@@ -6,9 +6,6 @@ class Validator:
     validServingModes = [
         'only_one_of_mornings',
         'only_mornings',
-        'only_both_mornings',
-        'only_morning_1',
-        'only_morning_2',
         'only_mornings_prefer_1',
         'only_mornings_prefer_2',
         'only_mornings_prefer_both',
