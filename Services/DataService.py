@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import datetime
 
 @dataclass
 class Rota:
@@ -8,6 +9,7 @@ class Rota:
 class Event:
     id: int
     name: str
+    date: datetime
     slots: dict
 
 @dataclass
@@ -39,8 +41,8 @@ class DataService:
         rota = Rota()
 
         #Load all events (e.g. services)
-        for [id, name] in self.query('SELECT * FROM event'):
-            rota.events[id] = Event(id, name, dict())
+        for [id, name, date] in self.query('SELECT * FROM event'):
+            rota.events[id] = Event(id, name, date, dict())
 
         #Load all slots for timeSlots
         for [id, event_id, role_id, _, role_name] in self.query('SELECT * FROM slot LEFT JOIN role ON slot.role_id = role.id'):
