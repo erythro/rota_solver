@@ -83,12 +83,12 @@ class DataService:
             averageRoleCountsPerEvent[role_id] = averageRoleCountPerEvent
         return averageRoleCountsPerEvent
 
-    preferredServingModes = None
+    preferredServingModesCache = None
     def preferredServingModes(self) -> dict:
-        if self.preferredServingModes != None:
-            return self.preferredServingModes
+        if self.preferredServingModesCache != None:
+            return self.preferredServingModesCache
 
-        self.preferredServingModes = dict()
+        self.preferredServingModesCache = dict()
         for [id, preferred_serving_mode] in self.query('SELECT id, preferred_serving_mode FROM person'):
-            self.preferredServingModes[id] = person_serving_mode
-        return self.preferredServingModes
+            self.preferredServingModesCache[id] = preferred_serving_mode
+        return self.preferredServingModesCache

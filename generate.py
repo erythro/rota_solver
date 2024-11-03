@@ -8,6 +8,7 @@ from Model.Processor.CreateUserIsServingInEventVars import CreateUserIsServingIn
 from Model.Processor.ExactlyOnePersonInEachSlot import ExactlyOnePersonInEachSlot
 from Model.Processor.PersonCanOnlyServeOncePerEvent import PersonCanOnlyServeOncePerEvent
 from Model.Processor.ShareEqually import ShareEqually
+from Model.Processor.ServeInPreferredMode import ServeInPreferredMode
 from Validation.Validator import Validator
 
 connection = sqlite3.connect("var/data.db")
@@ -25,6 +26,7 @@ modelFactory = ModelFactory([
     ExactlyOnePersonInEachSlot(),
     PersonCanOnlyServeOncePerEvent(),
     ShareEqually(dataService, 1),
+    ServeInPreferredMode(dataService, 1)
 ])
 
 model = modelFactory.create(

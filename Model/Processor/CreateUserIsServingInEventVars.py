@@ -6,6 +6,7 @@ class CreateUserIsServingInEventVars(AbstractProcessor):
         personServedEvent = {}
         personServedDate = {}
         personServedDateCount = {}
+        eventsByDate = {}
         
         for [person_id, slot_id, event_id], possibility in model.data['possibilities']['all'].items():
             event = model.rota.events[event_id]
@@ -28,9 +29,15 @@ class CreateUserIsServingInEventVars(AbstractProcessor):
         for (person_id,event_id), possibilities in personServedEvent.items():
             personServedEvent[(person_id,event_id)] = model.model.NewBoolVar(f"worked_on_event__person_{person_id}__event_{event_id}")
             model.model.AddMaxEquality(personServedEvent[(person_id,event_id)], possibilities)
-
+        
+        for event in model.rota.events.values():
+            date = (event.date.year, event.date.month, event.date.day)
+            if date not in eventsByDate:
+                eventsByDate[date] = []
+            eventsByDate[date].append(event)
         model.data['personServedDate'] = personServedDate
         model.data['personServedDateCount'] = personServedDateCount
         model.data['personServedEvent'] = personServedEvent
+        model.data['eventsByDate'] = eventsByDate
 
 
