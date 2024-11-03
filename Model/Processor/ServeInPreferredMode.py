@@ -100,6 +100,7 @@ class ServeInPreferredMode(AbstractProcessor):
 
             if len(mornings) > 0 and len(evenings) > 0 and len(self.eitherMorningsOrEvening):
                 self.restrictEitherMorningsOrEvenings(mornings, evenings, self.eitherMorningsOrEvening, date, model)
+        model.toMinimise += toMinimise
 
 
     def preferNotEventsScore(self, events: list, person_ids: list, model: Model):
