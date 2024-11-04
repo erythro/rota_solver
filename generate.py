@@ -9,6 +9,7 @@ from Model.Processor.ExactlyOnePersonInEachSlot import ExactlyOnePersonInEachSlo
 from Model.Processor.PersonCanOnlyServeOncePerEvent import PersonCanOnlyServeOncePerEvent
 from Model.Processor.ShareEqually import ShareEqually
 from Model.Processor.ServeInPreferredMode import ServeInPreferredMode
+from Model.Processor.DistributeChunks import DistributeChunks
 from Validation.Validator import Validator
 
 connection = sqlite3.connect("var/data.db")
@@ -18,6 +19,7 @@ validator = Validator(dataService)
 validator.validate()
 
 rota = dataService.getRota()
+people = dataService.getPeople()
 roles = dataService.getRoles()
 
 modelFactory = ModelFactory([
@@ -26,17 +28,18 @@ modelFactory = ModelFactory([
     ExactlyOnePersonInEachSlot(),
     PersonCanOnlyServeOncePerEvent(),
     ShareEqually(dataService, 1),
-    ServeInPreferredMode(dataService, 1)
+    ServeInPreferredMode(dataService, 1),
+    DistributeChunks(1)
 ])
 
 model = modelFactory.create(
     rota,
+    people,
     roles
 )
 
 # Creates the solver and solve.
 solver = cp_model.CpSolver()
-# Enumerate all solutions.
 result = solver.solve(model.model, cp_model.ObjectiveSolutionPrinter())
 
 def exportSolution(connection, model, solver):

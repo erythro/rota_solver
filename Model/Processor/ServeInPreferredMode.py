@@ -4,7 +4,6 @@ from Model.Processor.AbstractProcessor import AbstractProcessor
 
 class ServeInPreferredMode(AbstractProcessor):
     weight: int
-    preferredServingModes: dict
     oncePerDate: list
     notEvenings: list
     notMornings: list
@@ -14,7 +13,6 @@ class ServeInPreferredMode(AbstractProcessor):
     eitherMorningsOrEvening: list
     def __init__(self, dataService: DataService, weight: int):
         self.weight = weight
-        self.preferredServingModes = dataService.preferredServingModes()
         self.oncePerDate = []
         self.notEvenings = []
         self.notMornings = []
@@ -23,8 +21,8 @@ class ServeInPreferredMode(AbstractProcessor):
         self.preferBoth = []
         self.eitherMorningsOrEvening = []
     def process(self, model: Model):
-        for person_id, preferredServingMode in self.preferredServingModes.items():
-            match preferredServingMode:
+        for person_id, person in model.people.items():
+            match person.preferredServingMode:
                 case 'only_one_of_mornings':
                     self.oncePerDate.append(person_id)
                     self.notEvenings.append(person_id)

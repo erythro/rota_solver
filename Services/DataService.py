@@ -12,6 +12,8 @@ class Event:
     date: datetime.datetime
     event_type: str
     slots: dict
+    prev_id: int|None
+    next_id: int|None
 
 @dataclass
 class Slot:
@@ -25,6 +27,13 @@ class Role:
     id: int
     role_name: str
     person_ids: list
+
+@dataclass
+class Person:
+    id: int
+    firstName: str
+    lastName: str
+    preferredServingMode: str
 
 class DataService:
     connection = None
@@ -42,13 +51,23 @@ class DataService:
         rota = Rota()
 
         #Load all events (e.g. services)
-        for [id, name, date, event_type] in self.query('SELECT * FROM event'):
-            rota.events[id] = Event(id, name, datetime.datetime.strptime(date,'%Y-%m-%d %H:%M:%S'), event_type, dict())
+        prev_id = None
+        for [id, name, date, event_type] in self.query('SELECT * FROM event ORDER BY date_time ASC'):
+            rota.events[id] = Event(id, name, datetime.datetime.strptime(date,'%Y-%m-%d %H:%M:%S'), event_type, dict(), prev_id, None)
+            if prev_id != None:
+                rota.events[prev_id].next_id = id
+            prev_id = id
 
         #Load all slots for timeSlots
         for [id, event_id, role_id, _, role_name] in self.query('SELECT * FROM slot LEFT JOIN role ON slot.role_id = role.id'):
             rota.events[event_id].slots[id] = Slot(id, event_id, role_id, role_name)
         return rota
+
+    def getPeople(self) -> dict:
+        people = dict()
+        for [id, first_name, last_name, preferred_serving_mode] in self.query('SELECT * FROM person'):
+            people[id] = Person(id, first_name, last_name, preferred_serving_mode)
+        return people
 
     def getRoles(self) -> dict:
         roles = dict()
@@ -82,13 +101,3 @@ class DataService:
         for [role_id, averageRoleCountPerEvent] in self.query('SELECT role_id, 1.0 * COUNT(id)/ COUNT(DISTINCT event_id) FROM slot GROUP BY role_id'):
             averageRoleCountsPerEvent[role_id] = averageRoleCountPerEvent
         return averageRoleCountsPerEvent
-
-    preferredServingModesCache = None
-    def preferredServingModes(self) -> dict:
-        if self.preferredServingModesCache != None:
-            return self.preferredServingModesCache
-
-        self.preferredServingModesCache = dict()
-        for [id, preferred_serving_mode] in self.query('SELECT id, preferred_serving_mode FROM person'):
-            self.preferredServingModesCache[id] = preferred_serving_mode
-        return self.preferredServingModesCache
