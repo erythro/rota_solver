@@ -64,15 +64,16 @@ class ServeInPreferredMode(AbstractProcessor):
             personModeNotMornings = person_id in self.notMornings
 
             if not personModeNotMornings and not personModeNotEvenings:
-                continue #nothing to filter out
+                continue #nothing to filter out, move on to next event/person entry
 
-            if model.rota.events[event_id].type == 'evening':
-                if personModeNotEvenings:
-                    model.model.Add(personIsServingThisEvent == 0)
-                continue
+            if model.rota.events[event_id].type == 'evening': # this event is an evening
+                if personModeNotEvenings: # the person will not serve it
+                    model.model.Add(personIsServingThisEvent == 0) # don't serve it
+                continue # move on to next event/person entry
             
-            if personModeNotMornings:
-                model.model.Add(personIsServingThisEvent == 0)
+            # this event is therefore a morning
+            if personModeNotMornings:#the person will not serve it
+                model.model.Add(personIsServingThisEvent == 0) # don't serve it
     
     def processEventsOnDatePreferences(self, model: Model):
         toMinimise = 0
@@ -82,25 +83,31 @@ class ServeInPreferredMode(AbstractProcessor):
             morning2s = list(filter(lambda event: event.event_type == 'morning_2',events))
             evenings = list(filter(lambda event: event.event_type == 'evening',events))
 
-            
+            #prefer not 1
             if len(morning1s) > 0 and len(self.preferNot1) > 0:
                 toMinimise += self.preferNotEventsScore(morning1s, self.preferNot1, model)
 
+            #prefer not 2
             if len(morning2s) > 0 and len(self.preferNot2) > 0:
                 toMinimise += self.preferNotEventsScore(morning2s, self.preferNot2, model)
 
+            #prefer both (or neither)
             if len(mornings) == 2:
                 for person_id in preferBoth:
                     morningPossibilities = {model.data['possibilities']['byEventAndPerson'][(event_id, person_id)] for event_id in map(mornings, lambda event: event.id)}
-                    # sum(morningPossibilities) can be 0, 1, or 2.  So sum(morningPossibilities) * (2 - sum(morningPossibilities)) will
-                    # in each of those cases be 0, 1, or 0
+                    # sum(morningPossibilities) can only be 0, 1, or 2, because they are either not serving, serving one, or serving both.
+                    # the values 0 or 2 are preferred, 1 is not, so if we pick the expression:
+                    # sum(morningPossibilities) * (2 - sum(morningPossibilities))
+                    # it will in each of those cases be 0, 1, or 0, so asking the model to minimise this encourages the neither and
+                    # both states, and punishes putting them down to serve one
                     toMinimise += self.weight * sum(morningPossibilities) * (2 - sum(morningPossibilities))
 
+            #prefer either serving the evening or the morning but not both
             if len(mornings) > 0 and len(evenings) > 0 and len(self.eitherMorningsOrEvening):
                 self.restrictEitherMorningsOrEvenings(mornings, evenings, self.eitherMorningsOrEvening, date, model)
         model.toMinimise += toMinimise
 
-
+    #punish the model for selecting a person for one of the passed events
     def preferNotEventsScore(self, events: list, person_ids: list, model: Model):
         score = 0
         for person_id in person_ids:
@@ -110,12 +117,15 @@ class ServeInPreferredMode(AbstractProcessor):
     
     def restrictEitherMorningsOrEvening(self, mornings: list, evenings: list, person_ids: list, date, model: Model):
         for person_id in person_ids:
+            #are they serving in the morning
             morningPossibilities = {model.data['possibilities']['byEventAndPerson'][(event_id, person_id)] for event_id in map(mornings, lambda event: event.id)}
             servingInMorning = model.model.NewBoolVar(f"serving_in_morning_on_date__person_{person_id}__date_{date[0]}-{date[1]}-{date[2]}")
             model.model.AddMaxEquality(servingInMorning, morningPossibilities)
 
+            #are they serving in the evening
             eveningPossibilities = {model.data['possibilities']['byEventAndPerson'][(event_id, person_id)] for event_id in map(evenings, lambda event: event.id)}
             servingInEvening = model.model.NewBoolVar(f"serving_in_evening_on_date__person_{person_id}__date_{date[0]}-{date[1]}-{date[2]}")
             model.model.AddMaxEquality(servingInEvening, eveningPossibilities)
 
+            #they must not serve in both, the sum must be less than 2
             model.model.Add((servingInMorning + servingInEvening) < 2)

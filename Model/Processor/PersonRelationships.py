@@ -23,6 +23,9 @@ class PersonRelationships(AbstractProcessor):
                     toMinimise += self.weight * (len(model.data['eventsByDate'].keys()) - self.getAbsDiff(from_id, to_id, 'date', model))
         model.toMinimise += toMinimise
 
+    # this function gets the sum of the differences in the booleans for whether the person served an event or a date
+    # so e.g. if the person served the exact same dates as another, this will be be 0, if the person served completely
+    # different dates this will be equal to the number of dates.
     def getAbsDiff(self, from_id: int, to_id: int, possiblityType: str, model: Model):
         differences = []
         if possiblityType == 'event':
@@ -30,9 +33,10 @@ class PersonRelationships(AbstractProcessor):
                 difference = model.model.NewBoolVar(
                     f"difference_between_people_for_events__person_from_{from_id}__person_to_{to_id}__event_{event_id}"
                 )
+                #this will be 1 if they didn't work on the same event, and 0 if they did
                 model.model.AddAbsEquality(
                     difference,
-                    model.data['possibilities']['byEventAndPerson'][(event_id,from_id)] - model.data['possibilities']['byEventAndPerson'][(event_id,to_id)]
+                    sum(model.data['possibilities']['byEventAndPerson'][(event_id,from_id)]) - sum(model.data['possibilities']['byEventAndPerson'][(event_id,to_id)])
                 )
                 differences.append(difference)
             return sum(differences)
@@ -41,6 +45,7 @@ class PersonRelationships(AbstractProcessor):
             difference = model.model.NewBoolVar(
                 f"difference_between_people_for_date__person_from_{from_id}__person_to_{to_id}__date_{date[0]}-{date[1]}-{date[2]}"
             )
+            #this will be 1 if they didn't work on the same date, and 0 if they did
             model.model.AddAbsEquality(
                 difference,
                 model.data['personServedDate'][(from_id, date)] - model.data['personServedDate'][(to_id, date)]
