@@ -2,7 +2,11 @@ from Services.DataService import DataService
 
 class Validator:
     dataService: DataService
-    validTypes = ['morning_1','morning_2','evening']
+    validTypes = [
+        'morning_1',
+        'morning_2',
+        'evening'
+    ]
     validServingModes = [
         'only_one_of_mornings',
         'only_mornings',
@@ -14,6 +18,12 @@ class Validator:
         'only_mornings_or_evening',
         'any'
     ]
+    validRelationships = [
+        'serve_same_event',
+        'serve_same_date',
+        'serve_different_event',
+        'serve_different_date'
+    ]
     def __init__(self, dataService: DataService):
         self.dataService = dataService
         return
@@ -21,6 +31,7 @@ class Validator:
         self.noNullEventDate()
         self.eventTypes()
         self.personServingModes()
+        self.personPersonRelationships()
         return
     def noNullEventDate(self):
         [[count]] = self.dataService.query('SELECT COUNT(id) FROM event WHERE date_time IS NULL')
@@ -36,3 +47,8 @@ class Validator:
         [[count]] = self.dataService.query(f"SELECT COUNT(id) FROM person WHERE preferred_serving_mode NOT IN ({modes})")
         if count != 0:
             raise Exception(f"validation error, person preferred_serving_mode must be in list: {modes}")
+    def personPersonRelationships(self):
+        relationships = "'" + "','".join(self.validRelationships) + "'"
+        [[count]] = self.dataService.query(f"SELECT COUNT(*) FROM person_person WHERE relationship_type NOT IN ({relationships})")
+        if count != 0:
+            raise Exception(f"validation error, person relationship_type must be in list: {relationships}")

@@ -10,6 +10,7 @@ from Model.Processor.PersonCanOnlyServeOncePerEvent import PersonCanOnlyServeOnc
 from Model.Processor.ShareEqually import ShareEqually
 from Model.Processor.ServeInPreferredMode import ServeInPreferredMode
 from Model.Processor.DistributeChunks import DistributeChunks
+from Model.Processor.PersonRelationships import PersonRelationships
 from Validation.Validator import Validator
 
 connection = sqlite3.connect("var/data.db")
@@ -29,7 +30,8 @@ modelFactory = ModelFactory([
     PersonCanOnlyServeOncePerEvent(),
     ShareEqually(dataService, 1),
     ServeInPreferredMode(dataService, 1),
-    DistributeChunks(1)
+    DistributeChunks(1),
+    PersonRelationships(dataService, 1)
 ])
 
 model = modelFactory.create(

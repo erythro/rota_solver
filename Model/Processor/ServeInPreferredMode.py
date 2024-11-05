@@ -91,7 +91,7 @@ class ServeInPreferredMode(AbstractProcessor):
 
             if len(mornings) == 2:
                 for person_id in preferBoth:
-                    morningPossibilities = {model.data['byEventAndPerson'][(event_id, person_id)] for event_id in map(mornings, lambda event: event.id)}
+                    morningPossibilities = {model.data['possibilities']['byEventAndPerson'][(event_id, person_id)] for event_id in map(mornings, lambda event: event.id)}
                     # sum(morningPossibilities) can be 0, 1, or 2.  So sum(morningPossibilities) * (2 - sum(morningPossibilities)) will
                     # in each of those cases be 0, 1, or 0
                     toMinimise += self.weight * sum(morningPossibilities) * (2 - sum(morningPossibilities))
@@ -104,17 +104,17 @@ class ServeInPreferredMode(AbstractProcessor):
     def preferNotEventsScore(self, events: list, person_ids: list, model: Model):
         score = 0
         for person_id in person_ids:
-            eventPossibilities = {model.data['byEventAndPerson'][(event_id, person_id)] for event_id in map(events, lambda event: event.id)}
+            eventPossibilities = {model.data['possibilities']['byEventAndPerson'][(event_id, person_id)] for event_id in map(events, lambda event: event.id)}
             score += sum(eventPossibilities) * self.weight
         return score
     
     def restrictEitherMorningsOrEvening(self, mornings: list, evenings: list, person_ids: list, date, model: Model):
         for person_id in person_ids:
-            morningPossibilities = {model.data['byEventAndPerson'][(event_id, person_id)] for event_id in map(mornings, lambda event: event.id)}
+            morningPossibilities = {model.data['possibilities']['byEventAndPerson'][(event_id, person_id)] for event_id in map(mornings, lambda event: event.id)}
             servingInMorning = model.model.NewBoolVar(f"serving_in_morning_on_date__person_{person_id}__date_{date[0]}-{date[1]}-{date[2]}")
             model.model.AddMaxEquality(servingInMorning, morningPossibilities)
 
-            eveningPossibilities = {model.data['byEventAndPerson'][(event_id, person_id)] for event_id in map(evenings, lambda event: event.id)}
+            eveningPossibilities = {model.data['possibilities']['byEventAndPerson'][(event_id, person_id)] for event_id in map(evenings, lambda event: event.id)}
             servingInEvening = model.model.NewBoolVar(f"serving_in_evening_on_date__person_{person_id}__date_{date[0]}-{date[1]}-{date[2]}")
             model.model.AddMaxEquality(servingInEvening, eveningPossibilities)
 

@@ -101,3 +101,6 @@ class DataService:
         for [role_id, averageRoleCountPerEvent] in self.query('SELECT role_id, 1.0 * COUNT(id)/ COUNT(DISTINCT event_id) FROM slot GROUP BY role_id'):
             averageRoleCountsPerEvent[role_id] = averageRoleCountPerEvent
         return averageRoleCountsPerEvent
+
+    def getRelationships(self) -> dict:
+        return self.query('SELECT * FROM person_person')
