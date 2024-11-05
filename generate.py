@@ -24,11 +24,12 @@ people = dataService.getPeople()
 roles = dataService.getRoles()
 
 modelFactory = ModelFactory([
+    #processing steps
     AddPossibilities(),
     CreateUserIsServingInEventVars(),
     ExactlyOnePersonInEachSlot(),
     PersonCanOnlyServeOncePerEvent(),
-    ShareEqually(dataService, 1),
+    ShareEqually(dataService, 1), #ones with an integer argument like this are weighted and can be tweaked
     ServeInPreferredMode(dataService, 1),
     DistributeChunks(1),
     PersonRelationships(dataService, 1)
