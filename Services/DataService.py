@@ -47,7 +47,7 @@ class DataService:
         return self.cursor.execute(query).fetchall()
         
 
-    def getRota(self) -> Rota:
+    def getRotaAndSlots(self) -> (Rota,dict):
         rota = Rota()
 
         #Load all events (e.g. services)
@@ -59,9 +59,11 @@ class DataService:
             prev_id = id
 
         #Load all slots for timeSlots
+        slots = dict()
         for [id, event_id, role_id, _, role_name] in self.query('SELECT * FROM slot LEFT JOIN role ON slot.role_id = role.id'):
-            rota.events[event_id].slots[id] = Slot(id, event_id, role_id, role_name)
-        return rota
+            slots[id] = Slot(id, event_id, role_id, role_name)
+            rota.events[event_id].slots[id] = slots[id]
+        return (rota, slots)
 
     def getPeople(self) -> dict:
         people = dict()
@@ -107,3 +109,6 @@ class DataService:
 
     def getPersonDatePreferences(self) -> dict:
         return self.query('SELECT * FROM person_date_preference')
+    
+    def getPrefilledRota(self) -> dict:
+        return self.query('SELECT * FROM prefilled_rota')

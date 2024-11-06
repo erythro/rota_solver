@@ -6,6 +6,7 @@ from dataclasses import dataclass
 class Model:
     model: cp_model
     rota: Rota
+    slots: dict
     people: dict
     roles: dict
     data: dict
@@ -16,8 +17,8 @@ class ModelFactory:
     def __init__(self, processors: list):
         self.processors = processors
 
-    def create(self, rota: Rota, people:dict, roles: dict) -> Model:
-        model = Model(cp_model.CpModel(), rota, people, roles, {})
+    def create(self, rota: Rota, slots: dict, people: dict, roles: dict) -> Model:
+        model = Model(cp_model.CpModel(), rota, slots, people, roles, {})
         for processor in self.processors:
             processor.process(model)
         model.model.minimize(model.toMinimise)

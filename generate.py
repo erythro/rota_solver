@@ -12,6 +12,7 @@ from Model.Processor.ServeInPreferredMode import ServeInPreferredMode
 from Model.Processor.DistributeChunks import DistributeChunks
 from Model.Processor.PersonRelationships import PersonRelationships
 from Model.Processor.DatePreferences import DatePreferences
+from Model.Processor.PrefilledRota import PrefilledRota
 from Validation.Validator import Validator
 
 connection = sqlite3.connect("var/data.db")
@@ -20,7 +21,7 @@ dataService = DataService(connection)
 validator = Validator(dataService)
 validator.validate()
 
-rota = dataService.getRota()
+(rota, slots) = dataService.getRotaAndSlots()
 people = dataService.getPeople()
 roles = dataService.getRoles()
 
@@ -34,11 +35,13 @@ modelFactory = ModelFactory([
     ServeInPreferredMode(dataService, 1),
     DistributeChunks(1),
     PersonRelationships(dataService, 1),
-    DatePreferences(dataService, 1)
+    DatePreferences(dataService, 1),
+    PrefilledRota(dataService)
 ])
 
 model = modelFactory.create(
     rota,
+    slots,
     people,
     roles
 )
@@ -51,10 +54,10 @@ def exportSolution(connection, model, solver):
     cursor = connection.cursor()
     cursor.execute('DELETE FROM solution')
     toInsert = []
-    for (person_id, slot_id, event_id), possibility in model.data['possibilities']['all'].items():
+    for (person_id, slot_id), possibility in model.data['possibilities']['all'].items():
         if solver.boolean_value(possibility):
-            toInsert.append((event_id,slot_id,person_id))
-    cursor.executemany("INSERT INTO solution VALUES(?, ?, ?)", toInsert)
+            toInsert.append((slot_id,person_id))
+    cursor.executemany("INSERT INTO solution VALUES(?, ?)", toInsert)
     connection.commit()
 
 if result == cp_model.MODEL_INVALID:

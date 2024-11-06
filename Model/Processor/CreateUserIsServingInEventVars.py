@@ -8,7 +8,8 @@ class CreateUserIsServingInEventVars(AbstractProcessor):
         personServedDateCount = {}
         eventsByDate = {}
         
-        for [person_id, slot_id, event_id], possibility in model.data['possibilities']['all'].items():
+        for [person_id, slot_id], possibility in model.data['possibilities']['all'].items():
+            event_id = model.slots[slot_id].event_id
             event = model.rota.events[event_id]
             date = (event.date.year, event.date.month, event.date.day)
             if (person_id,date) not in personServedDate:
