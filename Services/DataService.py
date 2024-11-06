@@ -104,3 +104,6 @@ class DataService:
 
     def getRelationships(self) -> dict:
         return self.query('SELECT * FROM person_person')
+
+    def getPersonDatePreferences(self) -> dict:
+        return self.query('SELECT * FROM person_date_preference')

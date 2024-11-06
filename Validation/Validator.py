@@ -24,6 +24,10 @@ class Validator:
         'serve_different_event',
         'serve_different_date'
     ]
+    validDatePreferences = [
+        'not_serve',
+        'prefer_serve'
+    ]
     def __init__(self, dataService: DataService):
         self.dataService = dataService
         return
@@ -32,6 +36,7 @@ class Validator:
         self.eventTypes()
         self.personServingModes()
         self.personPersonRelationships()
+        self.personDatePreferences()
         return
     def noNullEventDate(self):
         [[count]] = self.dataService.query('SELECT COUNT(id) FROM event WHERE date_time IS NULL')
@@ -52,3 +57,8 @@ class Validator:
         [[count]] = self.dataService.query(f"SELECT COUNT(*) FROM person_person WHERE relationship_type NOT IN ({relationships})")
         if count != 0:
             raise Exception(f"validation error, person relationship_type must be in list: {relationships}")
+    def personDatePreferences(self):
+        preferences = "'" + "','".join(self.validDatePreferences) + "'"
+        [[count]] = self.dataService.query(f"SELECT COUNT(*) FROM person_date_preference WHERE preference_type NOT IN ({preferences})")
+        if count != 0:
+            raise Exception(f"validation error, person_date preference_type must be in list: {preferences}")

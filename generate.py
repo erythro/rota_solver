@@ -11,6 +11,7 @@ from Model.Processor.ShareEqually import ShareEqually
 from Model.Processor.ServeInPreferredMode import ServeInPreferredMode
 from Model.Processor.DistributeChunks import DistributeChunks
 from Model.Processor.PersonRelationships import PersonRelationships
+from Model.Processor.DatePreferences import DatePreferences
 from Validation.Validator import Validator
 
 connection = sqlite3.connect("var/data.db")
@@ -32,7 +33,8 @@ modelFactory = ModelFactory([
     ShareEqually(dataService, 1), #ones with an integer argument like this are weighted and can be tweaked
     ServeInPreferredMode(dataService, 1),
     DistributeChunks(1),
-    PersonRelationships(dataService, 1)
+    PersonRelationships(dataService, 1),
+    DatePreferences(dataService, 1)
 ])
 
 model = modelFactory.create(
