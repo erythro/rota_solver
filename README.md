@@ -5,12 +5,12 @@ python 3 installed.  I think that's all?
 1. open powershell
 2. cd to this directory
 3. pip install -r requirements.txt
-4. python3 migrate.py
+4. python3 database.py migrate
 ## Linux
 1. open bash
 2. cd to this directory
 3. pip install -r requirements.txt
-4. python3 migrate.py
+4. python3 database.py migrate
 
 # Running the solver
 1. set up your database.  At the moment there is no application for this, connect to the var/data.db file with your preferred sqlite client (I used heidisql)
