@@ -1,6 +1,6 @@
 from Services.DataService import DataService
 
-class Validator:
+class ValidationService:
     dataService: DataService
     validTypes = [
         'morning_1',

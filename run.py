@@ -5,9 +5,14 @@ from Commands.Migrate import Migrate
 from Commands.Dump import Dump
 from Commands.ImportDump import ImportDump
 from Commands.GenerateRota import GenerateRota
+from Services.DataService import DataService
+from Services.DataService import DataService
+from Services.ValidationService import ValidationService
 from functools import partial
 
 connection = sqlite3.connect("var/data.db")
+dataService = DataService(connection)
+validator = ValidationService(dataService)
 
 main_parser = argparse.ArgumentParser()
 subparsers = main_parser.add_subparsers(title="command",dest='command')
@@ -16,8 +21,8 @@ commands = [
     CreateMigration(),
     Migrate(),
     Dump(connection),
-    ImportDump(connection),
-    GenerateRota()
+    ImportDump(connection,validator),
+    GenerateRota(validator, dataService, connection)
 ]
 
 for command in commands:

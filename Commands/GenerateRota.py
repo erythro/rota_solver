@@ -13,10 +13,22 @@ from Model.Processor.DistributeChunks import DistributeChunks
 from Model.Processor.PersonRelationships import PersonRelationships
 from Model.Processor.DatePreferences import DatePreferences
 from Model.Processor.PrefilledRota import PrefilledRota
-from Validation.Validator import Validator
+from Services.ValidationService import ValidationService
 from Commands.AbstractCommand import AbstractCommand
 
 class GenerateRota(AbstractCommand):
+    validator: ValidationService
+    dataService: DataService
+    connection = None
+    def __init__(
+        self,
+        validator: ValidationService,
+        dataService: DataService,
+        connection
+    ):
+        self.validator = validator
+        self.dataService = dataService
+        self.connection = connection
     def getName(self) -> str:
         return 'generateRota'
     def getDesc(self) -> str:
@@ -24,29 +36,13 @@ class GenerateRota(AbstractCommand):
     def configure(self, parser):
         pass
     def execute(self, argparse):
-        connection = sqlite3.connect("var/data.db")
-        dataService = DataService(connection)
+        self.validator.validate()
 
-        validator = Validator(dataService)
-        validator.validate()
+        (rota, slots) = self.dataService.getRotaAndSlots()
+        people = self.dataService.getPeople()
+        roles = self.dataService.getRoles()
 
-        (rota, slots) = dataService.getRotaAndSlots()
-        people = dataService.getPeople()
-        roles = dataService.getRoles()
-
-        modelFactory = ModelFactory([
-            #processing steps
-            AddPossibilities(),
-            CreateUserIsServingInEventVars(),
-            ExactlyOnePersonInEachSlot(),
-            PersonCanOnlyServeOncePerEvent(),
-            ShareEqually(dataService, 1), #ones with an integer argument like this are weighted and can be tweaked
-            ServeInPreferredMode(dataService, 1),
-            DistributeChunks(1),
-            PersonRelationships(dataService, 1),
-            DatePreferences(dataService, 1),
-            PrefilledRota(dataService)
-        ])
+        modelFactory = self.makeModelFactory()
 
         model = modelFactory.create(
             rota,
@@ -65,19 +61,33 @@ class GenerateRota(AbstractCommand):
             print('No Solution Found')
         elif result == cp_model.FEASIBLE:
             print('Feasible Solution Found')
-            self.exportSolution(connection, model, solver)
+            self.exportSolution(model, solver)
         elif result == cp_model.OPTIMAL:
             print('Optimal Solution Found')
-            self.exportSolution(connection, model, solver)
+            self.exportSolution(model, solver)
         else:
             print('Unknown result code')
-        connection.close()
-    def exportSolution(self, connection, model, solver):
-        cursor = connection.cursor()
+        self.connection.close()
+    def makeModelFactory(self):
+        return ModelFactory([
+            #processing steps
+            AddPossibilities(),
+            CreateUserIsServingInEventVars(),
+            ExactlyOnePersonInEachSlot(),
+            PersonCanOnlyServeOncePerEvent(),
+            ShareEqually(self.dataService, 1), #ones with an integer argument like this are weighted and can be tweaked
+            ServeInPreferredMode(self.dataService, 1),
+            DistributeChunks(1),
+            PersonRelationships(self.dataService, 1),
+            DatePreferences(self.dataService, 1),
+            PrefilledRota(self.dataService)
+        ])
+    def exportSolution(self, model, solver):
+        cursor = self.connection.cursor()
         cursor.execute('DELETE FROM solution')
         toInsert = []
         for (person_id, slot_id), possibility in model.data['possibilities']['all'].items():
             if solver.boolean_value(possibility):
                 toInsert.append((slot_id,person_id))
         cursor.executemany("INSERT INTO solution VALUES(?, ?)", toInsert)
-        connection.commit()
+        self.connection.commit()

@@ -3,8 +3,10 @@ import csv
 import os
 import re
 from Commands.AbstractCommand import AbstractCommand
+from Services.ValidationService import ValidationService
 
 class ImportDump(AbstractCommand):
+    validator: ValidationService
     connection = None
     cursor = None
     tables = [
@@ -18,9 +20,10 @@ class ImportDump(AbstractCommand):
 		'person_date_preference',
 		'prefilled_rota',
 	]
-    def __init__(self, connection):
+    def __init__(self, connection, validator: ValidationService):
         self.connection = connection
         self.cursor = self.connection.cursor()
+        self.validator = validator
     def getName(self) -> str:
         return 'importDump'
     def getDesc(self) -> str:
@@ -34,6 +37,11 @@ class ImportDump(AbstractCommand):
             self.cursor.execute(f"DELETE FROM {table}")
             self.cursor.executemany(f"INSERT INTO {table} VALUES({placeholder})", rows)
             print(f"read {table}")
+        try:
+            self.validator.validate()
+        except Exception as e:
+            self.connection.rollback()
+            raise e
         self.connection.commit()
         self.connection.close()
         print('success')
