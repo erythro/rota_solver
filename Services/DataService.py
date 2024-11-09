@@ -21,6 +21,7 @@ class Slot:
     event_id: int
     role_id: int
     role_name: str
+    optional: bool
 
 @dataclass
 class Role:
@@ -61,8 +62,8 @@ class DataService:
 
         #Load all slots for timeSlots
         slots = dict()
-        for [id, event_id, role_id, _, role_name] in self.query('SELECT * FROM slot LEFT JOIN role ON slot.role_id = role.id'):
-            slots[id] = Slot(id, event_id, role_id, role_name)
+        for [id, event_id, role_id, optional, _, role_name] in self.query('SELECT * FROM slot LEFT JOIN role ON slot.role_id = role.id'):
+            slots[id] = Slot(id, event_id, role_id, role_name, optional)
             rota.events[event_id].slots[id] = slots[id]
         return (rota, slots)
 

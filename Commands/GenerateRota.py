@@ -5,7 +5,7 @@ from ortools.sat.python import cp_model
 from Model.ModelFactory import ModelFactory
 from Model.Processor.AddPossibilities import AddPossibilities
 from Model.Processor.CreateUserIsServingInEventVars import CreateUserIsServingInEventVars
-from Model.Processor.ExactlyOnePersonInEachSlot import ExactlyOnePersonInEachSlot
+from Model.Processor.CorrectNumberOfPeopleInEachSlot import CorrectNumberOfPeopleInEachSlot
 from Model.Processor.PersonCanOnlyServeOncePerEvent import PersonCanOnlyServeOncePerEvent
 from Model.Processor.ShareEqually import ShareEqually
 from Model.Processor.ServeInPreferredMode import ServeInPreferredMode
@@ -73,7 +73,7 @@ class GenerateRota(AbstractCommand):
             #processing steps
             AddPossibilities(),
             CreateUserIsServingInEventVars(),
-            ExactlyOnePersonInEachSlot(),
+            CorrectNumberOfPeopleInEachSlot(),
             PersonCanOnlyServeOncePerEvent(),
             ShareEqually(self.dataService, 1), #ones with an integer argument like this are weighted and can be tweaked
             ServeInPreferredMode(self.dataService, 1),

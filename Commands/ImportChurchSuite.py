@@ -22,7 +22,7 @@ class ImportChurchSuite(AbstractCommand):
                     state = 'Team'
                 else:
                     self.importRow(row, currentTeam)
-                    pass
+                    continue
 
 
             if state == 'Team':
