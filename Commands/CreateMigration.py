@@ -3,7 +3,7 @@ import sqlite3
 import Services.MigrationService
 import os
 import time
-from Database.Commands.AbstractCommand import AbstractCommand
+from Commands.AbstractCommand import AbstractCommand
 
 class CreateMigration(AbstractCommand):
     def getName(self) -> str:
@@ -17,7 +17,7 @@ class CreateMigration(AbstractCommand):
 
         name = str(int(time.time())) + '_' + args.name + '.py'
 
-        f = open(os.path.join('Database','Migrations',name), "w")
+        f = open(os.path.join('Migrations',name), "w")
         f.write("def run(cursor):\n")
         f.write('   cursor.execute("""\n')
         f.write("       #put your migration here\n")

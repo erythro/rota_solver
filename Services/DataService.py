@@ -34,6 +34,7 @@ class Person:
     firstName: str
     lastName: str
     preferredServingMode: str
+    email: str
 
 class DataService:
     connection = None
@@ -67,8 +68,8 @@ class DataService:
 
     def getPeople(self) -> dict:
         people = dict()
-        for [id, first_name, last_name, preferred_serving_mode] in self.query('SELECT * FROM person'):
-            people[id] = Person(id, first_name, last_name, preferred_serving_mode)
+        for [id, first_name, last_name, preferred_serving_mode, email] in self.query('SELECT * FROM person'):
+            people[id] = Person(id, first_name, last_name, preferred_serving_mode, email)
         return people
 
     def getRoles(self) -> dict:
@@ -94,7 +95,7 @@ class DataService:
     def onOneInXEvents(self) -> dict:
         onOneInXEvents = dict()
         for [person_id, role_id, on_one_in_x_events] in self.query('SELECT * FROM person_role'):
-            if on_one_in_x_events != None:
+            if on_one_in_x_events != None and on_one_in_x_events != '':
                 onOneInXEvents[(person_id, role_id)] = on_one_in_x_events
         return onOneInXEvents
     

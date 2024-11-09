@@ -2,7 +2,7 @@ import sqlite3
 import csv
 import os
 import re
-from Database.Commands.AbstractCommand import AbstractCommand
+from Commands.AbstractCommand import AbstractCommand
 
 class ImportDump(AbstractCommand):
     connection = None

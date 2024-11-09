@@ -1,9 +1,10 @@
 import argparse
 import sqlite3
-from Database.Commands.CreateMigration import CreateMigration
-from Database.Commands.Migrate import Migrate
-from Database.Commands.Dump import Dump
-from Database.Commands.ImportDump import ImportDump
+from Commands.CreateMigration import CreateMigration
+from Commands.Migrate import Migrate
+from Commands.Dump import Dump
+from Commands.ImportDump import ImportDump
+from Commands.GenerateRota import GenerateRota
 from functools import partial
 
 connection = sqlite3.connect("var/data.db")
@@ -15,7 +16,8 @@ commands = [
     CreateMigration(),
     Migrate(),
     Dump(connection),
-    ImportDump(connection)
+    ImportDump(connection),
+    GenerateRota()
 ]
 
 for command in commands:
