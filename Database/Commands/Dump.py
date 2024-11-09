@@ -29,9 +29,6 @@ class Dump(AbstractCommand):
     def execute(self, argparse):
         for table in self.tables:
             path = os.path.join('var','dump',f"{table}.csv")
-            # if os.path.isfile(path):
-            #     print(f"file exists {path}")
-            #     os.remove(path)
             file = open(path, "w")
             columns = []
             for (_, name, _, _, _, _) in self.cursor.execute(f"PRAGMA table_info({table})").fetchall():
