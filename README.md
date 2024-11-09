@@ -15,7 +15,7 @@ python 3 installed.  I think that's all?
 # Running the solver
 1. set up your database.
     * migrate as above
-    * export to csv using `python3 run.py dump`
+    * export to csv in the var/dump directory using `python3 run.py dump`
     * make your edits using excel
     * import from csv using `python3 run.py importDump`
 2. run `python3 run.py generateRota`
