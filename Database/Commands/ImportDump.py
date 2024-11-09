@@ -35,6 +35,7 @@ class ImportDump(AbstractCommand):
             self.cursor.executemany(f"INSERT INTO {table} VALUES({placeholder})", rows)
             print(f"read {table}")
         self.connection.commit()
+        self.connection.close()
         print('success')
 
     def tableToPath(self,table:str) -> str:
