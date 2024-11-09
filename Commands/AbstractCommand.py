@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from Model.ModelFactory import Model
 import argparse
 
 
@@ -14,5 +13,5 @@ class AbstractCommand(ABC):
     def configure(self, parser):
         pass
     @abstractmethod
-    def execute(self, argparse):
+    def execute(self, args):
         pass

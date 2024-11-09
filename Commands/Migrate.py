@@ -11,7 +11,7 @@ class Migrate(AbstractCommand):
         return 'initialises the database'
     def configure(self, parser):
         pass
-    def execute(self, argparse):
+    def execute(self, args):
         connection = sqlite3.connect("var/data.db")
 
         migrationService = Services.MigrationService.MigrationService(connection,os.path.join('Migrations'))

@@ -5,6 +5,7 @@ from Commands.Migrate import Migrate
 from Commands.Dump import Dump
 from Commands.ImportDump import ImportDump
 from Commands.GenerateRota import GenerateRota
+from Commands.ImportChurchSuite import ImportChurchSuite
 from Services.DataService import DataService
 from Services.DataService import DataService
 from Services.ValidationService import ValidationService
@@ -15,14 +16,15 @@ dataService = DataService(connection)
 validator = ValidationService(dataService)
 
 main_parser = argparse.ArgumentParser()
-subparsers = main_parser.add_subparsers(title="command",dest='command')
+subparsers = main_parser.add_subparsers(title="command")
 
 commands = [
     CreateMigration(),
     Migrate(),
     Dump(connection),
     ImportDump(connection,validator),
-    GenerateRota(validator, dataService, connection)
+    GenerateRota(validator, dataService, connection),
+    ImportChurchSuite()
 ]
 
 for command in commands:

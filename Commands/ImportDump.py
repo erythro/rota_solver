@@ -30,7 +30,7 @@ class ImportDump(AbstractCommand):
         return 'Re-Import dumped csv files'
     def configure(self, parser):
         pass
-    def execute(self, argparse):
+    def execute(self, args):
         for table in self.tables:
             (columns, rows) = self.getFormattedDataFromFile(table)
             placeholder = ('?,' * len(columns))[:-1]

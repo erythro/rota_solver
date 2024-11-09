@@ -35,7 +35,7 @@ class GenerateRota(AbstractCommand):
         return 'Generates the rota from the database data'
     def configure(self, parser):
         pass
-    def execute(self, argparse):
+    def execute(self, args):
         self.validator.validate()
 
         (rota, slots) = self.dataService.getRotaAndSlots()

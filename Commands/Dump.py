@@ -26,7 +26,7 @@ class Dump(AbstractCommand):
         return 'Dumps the entire database to csv files in the var/dump path'
     def configure(self, parser):
         pass
-    def execute(self, argparse):
+    def execute(self, args):
         for table in self.tables:
             path = os.path.join('var','dump',f"{table}.csv")
             file = open(path, "w")
