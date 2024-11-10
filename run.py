@@ -10,6 +10,9 @@ from Services.DataService import DataService
 from Services.DataService import DataService
 from Services.ValidationService import ValidationService
 from functools import partial
+from dotenv import load_dotenv
+
+load_dotenv()  
 
 connection = sqlite3.connect("var/data.db")
 dataService = DataService(connection)

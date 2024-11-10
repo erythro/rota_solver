@@ -1,5 +1,6 @@
 import sqlite3
 
+import os
 from Services.DataService import DataService
 from ortools.sat.python import cp_model
 from Model.ModelFactory import ModelFactory
@@ -75,11 +76,11 @@ class GenerateRota(AbstractCommand):
             CreateUserIsServingInEventVars(),
             CorrectNumberOfPeopleInEachSlot(),
             PersonCanOnlyServeOncePerEvent(),
-            ShareEqually(self.dataService, 1), #ones with an integer argument like this are weighted and can be tweaked
-            ServeInPreferredMode(self.dataService, 1),
-            DistributeChunks(1),
-            PersonRelationships(self.dataService, 1),
-            DatePreferences(self.dataService, 1),
+            ShareEqually(self.dataService, int(os.environ.get('SHARE_EQUALLY_MULTIPLIER'))), #ones with an integer argument like this are weighted and can be tweaked
+            ServeInPreferredMode(self.dataService, int(os.environ.get('SERVE_IN_PREFERRED_MODE_MULTIPLIER'))),
+            DistributeChunks(int(os.environ.get('DISTRIBUTE_CHUNKS_MULTIPLIER'))),
+            PersonRelationships(self.dataService, int(os.environ.get('PERSON_RELATIONSHIPS_MULTIPLIER'))),
+            DatePreferences(self.dataService, int(os.environ.get('DATE_PREFERENCES_MULTIPLIER'))),
             PrefilledRota(self.dataService)
         ])
     def exportSolution(self, model, solver):
