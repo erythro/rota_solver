@@ -24,7 +24,7 @@ commands = [
     Dump(connection),
     ImportDump(connection,validator),
     GenerateRota(validator, dataService, connection),
-    ImportChurchSuite()
+    ImportChurchSuite(dataService)
 ]
 
 for command in commands:

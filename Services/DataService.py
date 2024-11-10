@@ -45,8 +45,10 @@ class DataService:
         self.connection = connection
         self.cursor = connection.cursor()
 
-    def query(self, query: str):
-        return self.cursor.execute(query).fetchall()
+    def query(self, query: str, values = None):
+        if values == None:
+            return self.cursor.execute(query).fetchall()
+        return  self.cursor.execute(query, values).fetchall()
         
 
     def getRotaAndSlots(self) -> (Rota,dict):
@@ -114,3 +116,10 @@ class DataService:
     
     def getPrefilledRota(self) -> dict:
         return self.query('SELECT * FROM prefilled_rota')
+
+    def getRoleIdByName(self, name: str) -> None|int: 
+        result = self.query("SELECT id FROM role WHERE name = ?", [name])
+        if len(result) == 0:
+            return None
+        [[id]] = result
+        return id
