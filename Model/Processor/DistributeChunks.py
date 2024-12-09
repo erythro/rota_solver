@@ -18,7 +18,7 @@ class DistributeChunks(AbstractProcessor):
             for person_id in model.people.keys():
                 #declare the variable
                 sinceLastServed[person_id, date] = model.model.NewIntVar(0, eventCount, f"time_since_last_served__person_{person_id}__date_{date[0]}-{date[1]}-{date[2]}")
-                if prevDate == None:
+                if prevDate == None or ((person_id, prevDate) not in model.data['personServedDate']):
                     #for the first date it's 0
                     model.model.Add(sinceLastServed[person_id, date] == 0)
                 else:
