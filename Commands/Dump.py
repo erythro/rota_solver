@@ -1,4 +1,5 @@
 import sqlite3
+from pathlib import Path
 import csv
 import os
 from Commands.AbstractCommand import AbstractCommand
@@ -29,16 +30,16 @@ class Dump(AbstractCommand):
     def execute(self, args):
         for table in self.tables:
             path = os.path.join('var','dump',f"{table}.csv")
-            file = open(path, "w")
             columns = []
             for (_, name, _, _, _, _) in self.cursor.execute(f"PRAGMA table_info({table})").fetchall():
                 columns.append(name)
             data = self.cursor.execute(f"SELECT * FROM {table}").fetchall()
             data = [columns] + data
-            writer = csv.writer(file, delimiter=',',quotechar='"', quoting=csv.QUOTE_ALL)
-            for row in data:
-                writer.writerow(row)
-            print(f"dumped {path}")
+            with Path(path).open('w', newline='') as file:
+                writer = csv.writer(file, delimiter=',',quotechar='"', quoting=csv.QUOTE_ALL)
+                for row in data:
+                    writer.writerow(row)
+                print(f"dumped {path}")
         print('success')
 
         
