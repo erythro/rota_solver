@@ -57,6 +57,7 @@ class ImportChurchSuite(AbstractCommand):
                     raise Exception(f"headers invalid, {row} - expected {self.expectedHeaders}")
                 state = 'Data'
                 continue
+        self.dataService.connection.commit()
 
     def getFile(self, path):
         if not os.path.isfile(path):
