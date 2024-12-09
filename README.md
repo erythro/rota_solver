@@ -6,13 +6,13 @@ python 3 installed.  I think that's all?
 2. `cd` to this directory
 3. `Copy-Item ".env.example" -Destination ".env"`
 4. `pip install -r requirements.txt`
-5. `python3 run.py migrate`
+5. `python init.py`
 ## Linux/MacOS
 1. open bash/zsh
 2. `cd` to this directory
 3. `cp .env.example .env`
 4. `pip install -r requirements.txt`
-5. `python3 run.py migrate`
+5. `python init.py`
 
 # Running the solver
 1. set up your database.
